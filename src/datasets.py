@@ -1,7 +1,6 @@
 import numpy as np
 import tensorflow_datasets as tfds
-from torchvision import datasets, transforms
-import torch, os
+import os
 
 def load_cifar10():
   """Return the training and test datasets, as jnp.array's."""
@@ -61,6 +60,8 @@ def load_cifar100_split():
 class ImageNet:
     def __init__(self):
         super(ImageNet, self).__init__()
+        import torch
+        from torchvision import datasets, transforms
 
         data_root = "/tmp"
 
