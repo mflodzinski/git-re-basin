@@ -11,6 +11,7 @@ Things to try:
 * resnet18
 """
 import argparse
+import os
 
 import augmax
 import flax
@@ -187,15 +188,22 @@ if __name__ == "__main__":
   parser.add_argument("--test", action="store_true", help="Run in smoke-test mode")
   parser.add_argument("--seed", type=int, default=0, help="Random seed")
   parser.add_argument("--width-multiplier", type=int, default=64)
+  parser.add_argument("--wandb-project", type=str, default=None)
+  parser.add_argument("--wandb-entity", type=str, default=None)
   args = parser.parse_args()
 
-  with wandb.init(
-      project="git-re-basin",
-      entity="skainswo",
+  wandb_project = args.wandb_project or os.environ.get("WANDB_PROJECT", "git-re-basin")
+  wandb_entity = args.wandb_entity or os.environ.get("WANDB_ENTITY")
+  wandb_init_kwargs = dict(
+      project=wandb_project,
       tags=["cifar10", "vgg16"],
       mode="disabled" if args.test else "online",
       job_type="train",
-  ) as wandb_run:
+  )
+  if wandb_entity:
+    wandb_init_kwargs["entity"] = wandb_entity
+
+  with wandb.init(**wandb_init_kwargs) as wandb_run:
     artifact = wandb.Artifact("cifar10-vgg-weights", type="model-weights")
 
     config = wandb.config
