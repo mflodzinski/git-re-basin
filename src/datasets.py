@@ -2,21 +2,44 @@ import numpy as np
 import tensorflow_datasets as tfds
 import os
 
+def _tfds_data_dir():
+  return os.environ.get("TFDS_DATA_DIR")
+
 def load_cifar10():
   """Return the training and test datasets, as jnp.array's."""
   train_ds_images_u8, train_ds_labels = tfds.as_numpy(
-      tfds.load("cifar10", split="train", batch_size=-1, as_supervised=True))
+      tfds.load("cifar10",
+                split="train",
+                batch_size=-1,
+                as_supervised=True,
+                data_dir=_tfds_data_dir(),
+                try_gcs=False))
   test_ds_images_u8, test_ds_labels = tfds.as_numpy(
-      tfds.load("cifar10", split="test", batch_size=-1, as_supervised=True))
+      tfds.load("cifar10",
+                split="test",
+                batch_size=-1,
+                as_supervised=True,
+                data_dir=_tfds_data_dir(),
+                try_gcs=False))
   train_ds = {"images_u8": train_ds_images_u8, "labels": train_ds_labels}
   test_ds = {"images_u8": test_ds_images_u8, "labels": test_ds_labels}
   return train_ds, test_ds
 
 def load_cifar100():
   train_ds_images_u8, train_ds_labels = tfds.as_numpy(
-      tfds.load("cifar100", split="train", batch_size=-1, as_supervised=True))
+      tfds.load("cifar100",
+                split="train",
+                batch_size=-1,
+                as_supervised=True,
+                data_dir=_tfds_data_dir(),
+                try_gcs=False))
   test_ds_images_u8, test_ds_labels = tfds.as_numpy(
-      tfds.load("cifar100", split="test", batch_size=-1, as_supervised=True))
+      tfds.load("cifar100",
+                split="test",
+                batch_size=-1,
+                as_supervised=True,
+                data_dir=_tfds_data_dir(),
+                try_gcs=False))
   train_ds = {"images_u8": train_ds_images_u8, "labels": train_ds_labels}
   test_ds = {"images_u8": test_ds_images_u8, "labels": test_ds_labels}
   return train_ds, test_ds
