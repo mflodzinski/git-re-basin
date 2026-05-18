@@ -1,6 +1,7 @@
 import argparse
 import pickle
 from collections import defaultdict
+import os
 from pathlib import Path
 from typing import NamedTuple
 
@@ -324,16 +325,23 @@ def main():
   parser.add_argument("--test", action="store_true", help="Run in smoke-test mode")
   parser.add_argument("--seed", type=int, default=0, help="Random seed")
   parser.add_argument("--width-multiplier", type=int, required=True)
+  parser.add_argument("--wandb-project", type=str, default=None)
+  parser.add_argument("--wandb-entity", type=str, default=None)
   args = parser.parse_args()
 
-  with wandb.init(
-      project="git-re-basin",
-      entity="skainswo",
+  wandb_project = args.wandb_project or os.environ.get("WANDB_PROJECT", "git-re-basin")
+  wandb_entity = args.wandb_entity or os.environ.get("WANDB_ENTITY")
+  wandb_init_kwargs = dict(
+      project=wandb_project,
       tags=["cifar10", "vgg16", "straight-through-estimator"],
       # See https://github.com/wandb/client/issues/3672.
       mode="online",
       job_type="analysis",
-  ) as wandb_run:
+  )
+  if wandb_entity:
+    wandb_init_kwargs["entity"] = wandb_entity
+
+  with wandb.init(**wandb_init_kwargs) as wandb_run:
     config = wandb.config
     config.ec2_instance_type = ec2_get_instance_type()
     config.model_a = args.model_a
